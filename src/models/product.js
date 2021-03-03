@@ -47,6 +47,14 @@ const productSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
+        likes:[
+            {
+                userId:{
+                  type:mongoose.Schema.Types.ObjectId,
+                  ref:"User"
+                }
+            }
+        ],
         coment: String,
         date: {
           type: Date,

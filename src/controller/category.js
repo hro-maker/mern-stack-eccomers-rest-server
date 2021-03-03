@@ -49,7 +49,7 @@ exports.addCategory = (req, res) => {
 exports.getCategories = (req, res) => {
   Category.find({}).exec((error, categories) => {
     if (error) {
-      res.status(400).json({ error });
+      res.status(400).json({ errorrrrrr:error });
     }
     if (categories) {
       const categoriList = createCategories(categories);

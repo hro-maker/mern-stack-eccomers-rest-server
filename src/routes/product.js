@@ -1,6 +1,6 @@
 const express = require('express')
 const { requireSignin, adminMiddleware ,uploadS3} = require('../../common-middleware')
-const { createProduct, getProductsBySlug, geProductDetailsById, deleteProductById, getProducts, addcoment, addreting, getAllproducts } = require('../controller/product')
+const { createProduct, getProductsBySlug, geProductDetailsById, deleteProductById, getProducts, addcoment, addreting, getAllproducts,removecoment,likecoment } = require('../controller/product')
 
 const router= express.Router()
 
@@ -22,6 +22,16 @@ router.post(
   "/product/addcoment",
   requireSignin,
   addcoment
+);
+router.post(
+  "/product/likecoment",
+  requireSignin,
+  likecoment
+);
+router.post(
+  "/product/removecoment",
+  requireSignin,
+  removecoment
 );
 router.post(
   "/product/addretinc",

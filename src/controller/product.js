@@ -1,9 +1,10 @@
 const Product = require("../models/product");
 const slugify = require("slugify");
 const Category = require("../models/category");
+const product = require("../models/product");
 function runUpdate(condition, updateData) {
   return new Promise((resolve, reject) => {
-    //you update code here
+    
 
     Product.findOneAndUpdate(condition, updateData, { upsert: true })
       .then((result) => resolve())
@@ -77,23 +78,102 @@ exports.addreting = async (req, res) => {
     (error, prod) => {
       if (error) return res.status(400).json({ error });
       if (prod) {
-      
         return res.status(201).json({ prod });
       }
     }
   );
-
- 
-  
 };
-// Product.findOneAndUpdate(condition, update)
-//       .then((result) => res.status(201).json({result}))
-//       .catch((err) => res.status(400).json({err}));
-// promiseArray.push(runUpdate(condition, update));
+exports.likecoment= async(req,res)=>{
+  try {
+    const {_id,comentId}=req.body;
+    const productes = await Product.findOne({ _id });
+    let a=0;
+    productes.coments.forEach((el)=>{
+        if(el._id==comentId){
+          el.likes.forEach((al)=>{
+            if(al.userId == req.user._id){
+              a=1;
+            }
+          })
+        }
+    })
+    if(a==1){
+      let comt
+    
+        comt = productes.coments.find((ai)=>ai._id == req.body.comentId)  
+    comt.likes=comt.likes.filter((el)=>el.userId != req.user._id)
+    
+    const update = {
+      $set: {
+        "coments.$": comt
+      },
+    };
+   const condition = {_id, "coments._id":comentId}
+    Product.findOneAndUpdate(condition, update, { new: true }).exec(
+      (error, prod) => {
+        console.log("finished")
+        if (error) return res.status(400).json({ error });
+        if (prod) {
+        
+          return res.status(201).json({ prod });
+        }
+      }
+    );
+    }else{
+      let comt
+    
+        comt= productes.coments.find((ai)=>ai._id == req.body.comentId)  
+    
+       comt.likes.push({userId:req.user._id})
+    
+     
+     const update = {
+        $set: {
+          "coments.$": comt
+        },
+      };
+     const condition = {_id, "coments._id":comentId}
+      Product.findOneAndUpdate(condition, update, { new: true }).exec(
+        (error, prod) => {
+          console.log("finished")
+          if (error) return res.status(400).json({ error });
+          if (prod) {
+          
+            return res.status(201).json({ prod });
+          }
+        }
+      );
+    }
+   
+  } catch (error) {
+    console.log(error)
+  }
+}
 
-// Promise.all(promiseArray)
-//       .then((response) => res.status(201).json({ response }))
-//       .catch((error) => res.status(400).json({ error }));
+exports.removecoment = (req,res)=>{
+  try {
+    const {_id,comentId}=req.body;
+    update = {
+      $pull: {
+        coments: {_id:comentId}
+      },
+    };
+    condition = {_id, "coments._id":comentId}
+    Product.findOneAndUpdate(condition, update, { new: true }).exec(
+      (error, prod) => {
+        if (error) return res.status(400).json({ error });
+        if (prod) {
+        
+          return res.status(201).json({ prod });
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error)
+  }
+    
+  
+}
 exports.createProduct = (req, res) => {
   // res.status(200).json({file:req.files,body:req.body})
   const { name, price, description, category, quantity, createdBy } = req.body;
