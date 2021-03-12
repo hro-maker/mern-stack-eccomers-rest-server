@@ -4,7 +4,7 @@
   "description": "backend of marcet",
   "main": "index.server.js",
   "scripts": {
-    "start": "node ./src/index.server.js"
+    "start": "nodemon ./src/index.server.js"
   },
   "keywords": [
     "marcet",
