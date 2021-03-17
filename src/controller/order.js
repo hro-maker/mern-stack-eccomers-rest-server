@@ -1,9 +1,21 @@
 const Order =require('../models/order')
 const Cart =require('../models/cart')
 const Address =require('../models/atress')
+const nodemailer = require("nodemailer");
+const user = require('../models/user');
 
 exports.addOrder = (req, res) => {
-    Cart.deleteOne({ user: req.user._id }).exec((error, result) => {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        auth: {
+          user: 'hrantmuradyan137@gmail.com', 
+          pass: 'lyveokznvxckyhgc', 
+        },
+      });
+
+    Cart.deleteOne({ user: req.user._id }).exec(async(error, result) => {
       if (error) return res.status(400).json({ error });
       if (result) {
         req.body.user = req.user._id;
@@ -27,10 +39,24 @@ exports.addOrder = (req, res) => {
           },
         ];
         const order = new Order(req.body);
+        const em= await user.findOne({_id:req.user._id})
+
+        transporter.sendMail({
+          to:em.email,
+          from:'shlyans-cart_admin@shlyans.com',
+          subject:'order new product',
+          html:`
+              <p>  Shlyanscart  admin</p>
+              <h1>thenk you for use oure shop</h1>
+          `
+        })
         order.save((error, order) => {
           if (error) return res.status(400).json({ error });
           if (order) {
-            res.status(201).json({ order });
+            
+            console.log(req.user.email)
+            
+           return res.status(201).json({ order });
           }
         });
       }

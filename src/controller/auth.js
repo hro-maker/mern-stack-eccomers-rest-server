@@ -1,7 +1,9 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const shortid= require('shortid')
+const crypto = require('crypto')
 const bcrypt = require('bcrypt');
+const nodemailer = require("nodemailer");
 const generateJwtToken = (_id, role) => {
   return jwt.sign({ _id, role }, process.env.JWT_SECRET, {
     expiresIn: "90d",
@@ -78,8 +80,69 @@ exports.signin = (req, res) => {
 };
 exports.getalluser= async(req,res)=>{
   const allusers = await User.find({})
-  // .exec();
   res.status(200).json({
     allusers
   });
+}
+process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  auth: {
+    user: 'hrantmuradyan137@gmail.com', 
+    pass: 'lyveokznvxckyhgc', 
+  },
+});
+exports.forgot=(req,res)=>{
+      crypto.randomBytes(32,async(err,buffer)=>{
+           if(err){
+             console.log(err)
+           }
+           const token=await bcrypt.hash(req.body.email,12)
+           User.findOne({email:req.body.email}).then((user)=>{
+              if(!user){
+                return res.status(422).json({error:"user with that password dont found"})
+              }
+              user.ressetToken=token;
+              user.save().then(result =>{
+                try {
+                  console.log("userrr",result)
+                  transporter.sendMail({
+                    to:user.email,
+                    from:'shlyans-cart_admin@shlyans.com',
+                    subject:'password reset',
+                    html:`
+                        <p> you requested for password reset</p>
+                        <h1>click on this <a href="https://shlyanscart-app.herokuapp.com/resetPaassword/${token}">link</a>  for password reset</h1>
+                    `
+                  })
+                  return res.status(200).json({message:"check your email"})
+                } catch (error) {
+                      res.status(200).json({message:error})
+                }
+                
+              })
+           })
+      })
+      
+}
+exports.newPassword=(req,res)=>{
+  const newPassword = req.body.password
+  const sentToken = req.body.token
+  console.log(sentToken)
+  User.findOne({ressetToken:sentToken})
+  .then(user=>{
+      if(!user){
+          return res.status(422).json({message:"Try again session expired"})
+      }
+      bcrypt.hash(newPassword,10).then(hashedpassword=>{
+         user.hash_password = hashedpassword
+         user.ressetToken = undefined
+         user.save().then((saveduser)=>{
+             res.json({message:"password updated success"})
+         })
+      })
+  }).catch(err=>{
+      console.log(err)
+  })
 }

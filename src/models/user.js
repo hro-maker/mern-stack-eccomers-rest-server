@@ -24,6 +24,8 @@ const userSchema = new mongoose.Schema({
         index: true,
         lowercase: true
     },
+    ressetToken:String,
+    expireToken:Date,
     email: {
         type: String,
         required: true,
