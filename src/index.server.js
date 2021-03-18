@@ -35,6 +35,7 @@ mongoose
   .then(() => {
     console.log("Database connected");
   });
+
 app.use(cors())
 app.use(express.json({ extented: true }));
 app.use('/public',express.static(path.join(__dirname,'uploads')))
@@ -53,4 +54,5 @@ app.use("/api", messagerouts);
 app.use(express.json({extended: true}));
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
+  console.log("hello world")
 });
