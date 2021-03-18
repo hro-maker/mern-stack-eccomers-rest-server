@@ -4,6 +4,8 @@
   "description": "backend of marcet",
   "main": "index.server.js",
   "scripts": {
+    
+    "built":"node ./src/index.server.js",
     "start": "node ./src/index.server.js"
   },
   "keywords": [
