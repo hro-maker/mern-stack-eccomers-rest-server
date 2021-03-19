@@ -40,6 +40,20 @@ io.on("connection",  (socket) => {
     });
   });
 
+  socket.on("typing", async ({ chatroomId, user }) => {
+    const username=await User.findOne({_id:user})
+    io.to(chatroomId).emit("adminMessaage", {
+            user,
+            message:`${username.firstName} is typing message`
+    })
+  })
+  socket.on("untyping", ({ chatroomId}) => {
+    io.to(chatroomId).emit("adminMessaage", {
+            user:null,
+            message:''
+    })
+  })
+  // untyping
   socket.on("chatroomMessage", async ({ chatroomId, message }) => {
     if (message.trim().length > 0) {
       const user = await User.findOne({ _id: socket.userId });
