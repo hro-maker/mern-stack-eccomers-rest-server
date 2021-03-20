@@ -47,9 +47,9 @@ io.on("connection",  (socket) => {
             message:`${username.firstName} is typing message`
     })
   })
-  socket.on("untyping", ({ chatroomId}) => {
+  socket.on("untyping", ({ chatroomId,user}) => {
     io.to(chatroomId).emit("adminMessaage", {
-            user:null,
+            user,
             message:''
     })
   })
