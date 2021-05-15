@@ -7,7 +7,7 @@ const {app, server} =require('./app')
 // app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({extended: true}))
 
-
+//routes
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin/auth");
 const categoryRoutes= require('./routes/category')
@@ -21,7 +21,7 @@ const adminorderRoutes =require('./routes/admin/order')
 const chatroomsrouts =require('./routes/chatroom')
 const messagerouts =require('./routes/message')
 env.config();
-
+//database
 mongoose
   .connect(
     `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@cluster0.4dhzu.mongodb.net/${process.env.MONGO_DB_DTBASE}?retryWrites=true&w=majority`,
@@ -35,10 +35,18 @@ mongoose
   .then(() => {
     console.log("Database connected");
   });
-
+  let ALLOWED_ORIGINS = ["https://shlyanscart-app.herokuapp.com","https://shlyanscart-admin-app.herokuapp.com/" ];
+app.use((req, res, next) => {
+    let origin = req.headers.origin;
+    if(!ALLOWED_ORIGINS.includes(origin)){
+      return res.status(404).json({message:"origin dont allow"})
+    }
+    next();
+})
 app.use(cors())
 app.use(express.json({ extented: true }));
 app.use('/public',express.static(path.join(__dirname,'uploads')))
+//routes
 app.use("/api", authRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", categoryRoutes);
