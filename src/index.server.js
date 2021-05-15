@@ -36,6 +36,7 @@ mongoose
     console.log("Database connected");
   });
   let ALLOWED_ORIGINS = ["https://shlyanscart-app.herokuapp.com","https://shlyanscart-admin-app.herokuapp.com" ];
+  console.log("hello")
 app.use((req, res, next) => {
     let origin = req.headers.origin;
     if(!ALLOWED_ORIGINS.includes(origin)){
