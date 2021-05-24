@@ -35,15 +35,14 @@ mongoose
   .then(() => {
     console.log("Database connected");
   });
-  let ALLOWED_ORIGINS = ["https://shlyanscart-app.herokuapp.com","https://shlyanscart-admin-app.herokuapp.com" ];
-  console.log("hello")
-app.use((req, res, next) => {
-    let origin = req.headers.origin;
-    if(!ALLOWED_ORIGINS.includes(origin)){
-      return res.status(404).json({message:"origin dont allow"})
-    }
-    next();
-})
+//   let ALLOWED_ORIGINS = ["https://shlyanscart-app.herokuapp.com","https://shlyanscart-admin-app.herokuapp.com" ];
+// app.use((req, res, next) => {
+//     let origin = req.headers.origin;
+//     if(!ALLOWED_ORIGINS.includes(origin)){
+//       return res.status(404).json({message:"origin dont allow"})
+//     }
+//     next();
+// })
 app.use(cors())
 app.use(express.json({ extented: true }));
 app.use('/public',express.static(path.join(__dirname,'uploads')))
