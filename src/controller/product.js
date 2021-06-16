@@ -178,7 +178,6 @@ exports.createProduct =async (req, res) => {
   const { name, price, description, category, quantity, createdBy } = req.body;
   const uploader = async (path) => await cloudinary.uploads(path, 'Images');
    let productPictures = [];
- 
   if (req.files.length > 0) {
     const files = req.files;
   for (let i=0;i< files.length;i++) {

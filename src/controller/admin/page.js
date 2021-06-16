@@ -1,19 +1,33 @@
 const Page = require("../../models/page");
-
-exports.createPage =(req,res)=>{
+const cloudinary = require('../../../utiles')
+exports.createPage =async (req,res)=>{
     const {banners,products}=req.files;
+    const uploader = async (path) => await cloudinary.uploads(path, 'Pages');
     if(banners.length > 0){
-     req.body.banners=banners.map((banner,index)=>({
-            img:`${banner.location}`,
-            navigateTo:`/bannerClicked?categoryId=${req.body.category}&type=${req.body.type}`
-        }))
+     req.body.banners=[]
+        for (let i = 0; i < banners.length; i++) {
+            const { path } = banners[i];
+            const newPath = await uploader(path)
+            req.body.banners.push({
+                img:`${newPath.url}`,
+                navigateTo:`/bannerClicked?categoryId=${req.body.category}&type=${req.body.type}`
+            })
+        }
+
     }
     if(products.length > 0){
-        req.body.products = products.map((product,index)=>({
-            img:`${product.location}`,
-            navigateTo:`/productClicked?categoryId=${req.body.category}&type=${req.body.type}`
-        }))
-    }
+        req.body.products=[]
+           for (let i = 0; i < products.length; i++) {
+               const { path } = products[i];
+               const newPath = await uploader(path)
+               req.body.products.push({
+                   img:`${newPath.url}`,
+                   navigateTo:`/bannerClicked?categoryId=${req.body.category}&type=${req.body.type}`
+               })
+           }
+   
+       }
+
     req.body.createdBy=req.user._id;
     Page.findOne({category:req.body.category})
     .exec((error,page)=>{

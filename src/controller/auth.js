@@ -4,12 +4,13 @@ const shortid= require('shortid')
 const crypto = require('crypto')
 const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
+const cloudinary = require('../../utiles')
 const generateJwtToken = (_id, role) => {
   return jwt.sign({ _id, role }, process.env.JWT_SECRET, {
     expiresIn: "90d",
   });
 };
-exports.signup = (req, res) => {
+exports.signup =async (req, res) => {
   User.findOne({ email: req.body.email }).exec(async (error, user) => {
     if (user)
       return res.status(400).json({
@@ -18,7 +19,7 @@ exports.signup = (req, res) => {
     
     const { lastName, email, password } = req.body;
     const hash_password=await bcrypt.hash(password,10)
-     
+    const uploader = async (path) => await cloudinary.uploads(path, 'Images');
     const userobject={
       firstName:req.body.firstName,
       lastName,
@@ -28,7 +29,8 @@ exports.signup = (req, res) => {
       username: shortid.generate(),
     }
     if (req.file) {
-      userobject.profilePicture =req.file.location;
+      const newPath = await uploader(req.file.path)
+      userobject.profilePicture =newPath.url;
     }
     console.log(userobject)
     const _user = new User(userobject);
