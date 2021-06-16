@@ -1,10 +1,10 @@
 const express = require('express')
 const { requireSignin, adminMiddleware ,uploadS3} = require('../../common-middleware')
 const { createProduct, getProductsBySlug, geProductDetailsById, deleteProductById, getProducts, addcoment, addreting, getAllproducts,removecoment,likecoment } = require('../controller/product')
-
+const upload=require('../../common-middleware/multer')
 const router= express.Router()
-
-router.post('/product/create',requireSignin,adminMiddleware,uploadS3.array('productPictures'), createProduct)
+// ,uploadS3.array('productPictures')
+router.post('/product/create',requireSignin,adminMiddleware,upload.array('productPictures'),createProduct)
 
 router.delete(
   "/product/deleteProductById",

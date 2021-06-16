@@ -60,6 +60,7 @@ app.use("/api", adminorderRoutes);
 app.use("/api", chatroomsrouts);
 app.use("/api", messagerouts);
 app.use(express.json({extended: true}));
+//server
 server.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
